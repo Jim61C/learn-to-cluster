@@ -41,10 +41,10 @@ def train_gcn_e(model, cfg, logger):
     if cfg.distributed:
         raise NotImplementedError
     else:
-        _single_train(model, data_loaders, cfg)
+        _single_train(model, data_loaders, cfg, logger)
 
 
-def _single_train(model, data_loaders, cfg):
+def _single_train(model, data_loaders, cfg, logger):
     if cfg.gpus > 1:
         raise NotImplemented
     # put model on gpus
@@ -56,6 +56,7 @@ def _single_train(model, data_loaders, cfg):
                     optimizer,
                     cfg.work_dir,
                     cfg.log_level,
+                    logger,
                     iter_size=cfg.iter_size)
     runner.register_training_hooks(cfg.lr_config, cfg.optimizer_config,
                                    cfg.checkpoint_config, cfg.log_config)

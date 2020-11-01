@@ -13,6 +13,7 @@ from lgcn.datasets import build_dataloader
 
 from utils import (list2dict, write_meta, mkdir_if_no_exists, Timer)
 from evaluation import evaluate, accuracy
+from clustering_benchmark import ClusteringBenchmark
 
 
 def output_accuracy(output, labels):
@@ -201,3 +202,14 @@ def test_gcn_e(model, cfg, logger):
         print('==> evaluation')
         for metric in cfg.metrics:
             evaluate(dataset.gt_labels, pred_labels, metric)
+
+        # H and C-scores
+        gt_dict = {}
+        pred_dict = {}
+        for i in range(len(dataset.gt_labels)):
+            gt_dict[str(i)] = dataset.gt_labels[i]
+            pred_dict[str(i)] = pred_labels[i]
+        bm = ClusteringBenchmark(gt_dict)
+        scores = bm.evaluate_vmeasure(pred_dict)
+        # fmi_scores = bm.evaluate_fowlkes_mallows_score(pred_dict)
+        print(scores)

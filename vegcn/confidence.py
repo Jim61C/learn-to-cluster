@@ -44,6 +44,26 @@ def s_nbr(dists, nbrs, idx2lb, **kwargs):
     conf /= np.abs(conf).max()
     return conf
 
+def s_nbr_fast(dists, nbrs, idx2lb, **kwargs):
+    ''' use supervised confidence defined on neigborhood
+    '''
+    num, _ = dists.shape
+    conf = np.zeros((num, ), dtype=np.float32)
+    contain_neg = 0
+    idx2lb_array = np.array([v for k, v in idx2lb.items()], dtype=np.int32)
+    for i, (nbr, dist) in enumerate(zip(nbrs, dists)):
+        lb = idx2lb[i]
+        ind = idx2lb_array[nbr] == lb
+        pos = ((1-dist) * ind).sum()
+        neg = ((1-dist) * (1-ind)).sum()
+        conf[i] = pos - neg
+        #print (pos, neg)
+        if neg > 0:
+            contain_neg += 1
+    print('#contain_neg:', contain_neg)
+    conf /= np.abs(conf).max()
+    return conf
+
 
 def s_nbr_size_norm(dists, nbrs, idx2lb, **kwargs):
     ''' use supervised confidence defined on neigborhood (norm by size)
@@ -116,6 +136,7 @@ def confidence(metric='s_nbr', **kwargs):
         's_nbr_size_norm': s_nbr_size_norm,
         's_avg': s_avg,
         's_center': s_center,
+        's_nbr_fast': s_nbr_fast
     }
     if metric in metric2func:
         func = metric2func[metric]

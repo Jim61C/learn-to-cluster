@@ -32,17 +32,17 @@ def train_gcn_v(model, cfg, logger):
     if cfg.distributed:
         raise NotImplementedError
     else:
-        _single_train(model, dataset, cfg)
+        _single_train(model, dataset, cfg, logger)
 
 
-def _single_train(model, dataset, cfg):
+def _single_train(model, dataset, cfg, logger):
     if cfg.gpus > 1:
         raise NotImplemented
 
     # build runner
     optimizer = build_optimizer(model, cfg.optimizer)
     runner = Runner(model, batch_processor, optimizer, cfg.work_dir,
-                    cfg.log_level)
+                    logger)
     runner.register_training_hooks(cfg.lr_config, cfg.optimizer_config,
                                    cfg.checkpoint_config, cfg.log_config)
 

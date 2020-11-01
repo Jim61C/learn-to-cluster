@@ -11,8 +11,7 @@ class Runner(_Runner):
                  log_level=logging.INFO,
                  logger=None,
                  iter_size=1):
-        super().__init__(model, batch_processor, optimizer, work_dir,
-                         log_level, logger)
+        super().__init__(model, batch_processor, optimizer, work_dir, logger)
         assert isinstance(iter_size, int) and iter_size >= 1
         self.iter_size = iter_size
 

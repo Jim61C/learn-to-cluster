@@ -11,7 +11,7 @@ from vegcn.test_gcn_v import test
 from utils import create_logger, write_feat, mkdir_if_no_exists
 
 
-def extract_gcn_v(opath_feat, opath_pred_confs, data_name, cfg):
+def extract_gcn_v(opath_feat, opath_pred_confs, data_name, cfg, write_gcn_feat = False):
     if osp.isfile(opath_feat) and osp.isfile(opath_pred_confs):
         print('{} and {} already exist.'.format(opath_feat, opath_pred_confs))
         return
@@ -29,12 +29,15 @@ def extract_gcn_v(opath_feat, opath_pred_confs, data_name, cfg):
 
     pred_confs, gcn_feat = test(model, dataset, cfg, logger)
 
-    logger.info('save predicted confs to {}'.format(opath_pred_confs))
-    mkdir_if_no_exists(opath_pred_confs)
-    np.savez_compressed(opath_pred_confs,
-                        pred_confs=pred_confs,
-                        inst_num=dataset.inst_num)
+    if not osp.exists(opath_pred_confs):
+        logger.info('save predicted confs to {}'.format(opath_pred_confs))
+        mkdir_if_no_exists(opath_pred_confs)
+        np.savez_compressed(opath_pred_confs,
+                            pred_confs=pred_confs,
+                            inst_num=dataset.inst_num)
 
-    logger.info('save gcn features to {}'.format(opath_feat))
-    mkdir_if_no_exists(opath_feat)
-    write_feat(opath_feat, gcn_feat)
+
+    if not osp.exists(opath_feat) and write_gcn_feat:
+        logger.info('save gcn features to {}'.format(opath_feat))
+        mkdir_if_no_exists(opath_feat)
+        write_feat(opath_feat, gcn_feat)

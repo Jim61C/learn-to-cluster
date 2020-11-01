@@ -1,10 +1,11 @@
 import os
+from os import path as osp
 import numpy as np
 
 from utils import (read_meta, read_probs, l2norm, build_knns,
                    knns2ordered_nbrs, fast_knns2spmat, row_normalize,
                    build_symmetric_adj, sparse_mx_to_indices_values,
-                   intdict2ndarray, Timer)
+                   intdict2ndarray, Timer, rm_suffix)
 from vegcn.confidence import (confidence, confidence_to_peaks)
 
 
@@ -47,7 +48,12 @@ class GCNVDataset(object):
                 if knn_graph_path is not None:
                     print('knn_graph_path does not exist: {}'.format(
                         knn_graph_path))
-                knn_prefix = os.path.join(cfg.prefix, 'knns', cfg.name)
+                
+                prefix = osp.dirname(feat_path)
+                name = rm_suffix(osp.basename(feat_path))
+                # find root folder of `features`
+                prefix = osp.dirname(prefix)
+                knn_prefix = osp.join(prefix, 'knns', name)
                 knns = build_knns(knn_prefix, self.features, cfg.knn_method,
                                   cfg.knn)
 
